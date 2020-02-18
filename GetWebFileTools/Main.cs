@@ -31,8 +31,9 @@ namespace GetWebFileTools
 
                 this.webBrowser1.Url = new Uri(url);
             }
-            catch
+            catch(Exception ex)
             {
+                MessageBox.Show(ex.Message, "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -44,33 +45,47 @@ namespace GetWebFileTools
 
         private void btnGetViewDownURL_Click(object sender, EventArgs e)
         {
-            HtmlElementCollection hec = this.webBrowser1.Document.Body.GetElementsByTagName("video");
-            if (hec.Count > 0)
+            try
             {
-                this.txtViewDownURL.Text = hec[0].GetAttribute("src");
+                HtmlElementCollection hec = this.webBrowser1.Document.Body.GetElementsByTagName("video");
+                if (hec.Count > 0)
+                {
+                    this.txtViewDownURL.Text = hec[0].GetAttribute("src");
 
-                Clipboard.SetText(this.txtViewDownURL.Text);
+                    Clipboard.SetText(this.txtViewDownURL.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string strOutHtml = this.webBrowser1.Document.Body.OuterHtml;
-            if (!string.IsNullOrEmpty(strOutHtml))
+            try
             {
-                string regMatch = "<div\\sclass=\"docBox\"\\s.+downloadurl=\"(?<downUrl>.+)\\?response-content-disposition=.+;filename=(?<fileName>.+\\.ppt)\".+</div>";
-                Regex reg = new Regex(regMatch);
-                if (reg.IsMatch(strOutHtml))
+                string strOutHtml = this.webBrowser1.Document.Body.OuterHtml;
+                if (!string.IsNullOrEmpty(strOutHtml))
                 {
-                    Match m = reg.Match(strOutHtml);
-                    if (m.Groups.Count > 0)
+                    string regMatch = "<div\\sclass=\"docBox\"\\s.+downloadurl=\"(?<downUrl>.+)\\?response-content-disposition=.+;filename=(?<fileName>.+\\.ppt)\".+</div>";
+                    Regex reg = new Regex(regMatch);
+                    if (reg.IsMatch(strOutHtml))
                     {
-                        this.txtPPTDownURL.Text = m.Groups["downUrl"].Value;
-                        this.txtPPTName.Text = m.Groups["fileName"].Value;
+                        Match m = reg.Match(strOutHtml);
+                        if (m.Groups.Count > 0)
+                        {
+                            this.txtPPTDownURL.Text = m.Groups["downUrl"].Value;
+                            this.txtPPTName.Text = m.Groups["fileName"].Value;
 
-                        Clipboard.SetText(this.txtPPTDownURL.Text);
+                            Clipboard.SetText(this.txtPPTDownURL.Text);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
